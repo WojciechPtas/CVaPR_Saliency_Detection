@@ -160,3 +160,10 @@ cython_debug/
 #.idea/
 
 results
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/vcs.xml
+/.idea/CVaPR_Saliency_Detection.iml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/.gitignore
+/.idea/git_toolbox_prj.xml
