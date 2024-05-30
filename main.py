@@ -4,7 +4,7 @@ import argparse
 from pathlib import Path
 from utils import eprint, load_image
 from boolean_maps import compute_boolean_maps
-from attention_maps import calculate_attention_map
+from attention_maps import calculate_saliency_map
 
 
 
@@ -39,7 +39,7 @@ def main():
             
     
     # Calculate attention map
-    attention_map = calculate_attention_map(bool_maps)
+    attention_map = calculate_saliency_map(bool_maps)
     cv2.imshow("Attention Map", attention_map)
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(15,15))
     attention_map = cv2.morphologyEx(attention_map, cv2.MORPH_OPEN, kernel)
