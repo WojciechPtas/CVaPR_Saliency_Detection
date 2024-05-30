@@ -1,44 +1,11 @@
 #!/usr/bin/python3
 import cv2
 import argparse
-import sys
-import numpy as np
 from pathlib import Path
+from utils import eprint, load_image
+from boolean_maps import compute_boolean_maps
+from attention_maps import calculate_attention_map
 
-def eprint(*args, **kwargs):
-    print(*args, file = sys.stderr, **kwargs)
-
-def load_image(path):
-    img = cv2.imread(str(path))
-    (h, w, c) = img.shape[:3]
-    return (img, h, w, c)
-
-def compute_channel_boolean_maps(img, threshold_step, opening_kernel_size):
-    # We treat them separately so that appear more sorted
-    maps = []
-    inv_maps = []
-    
-    for threshold in range(0, 255, threshold_step):
-        bm = (img < threshold) * np.uint8(255)
-        inv = (img >= threshold) * np.uint8(255)
-        
-        if opening_kernel_size != 0:
-            kernel = np.ones((opening_kernel_size, opening_kernel_size), np.uint8)
-            bm = cv2.morphologyEx(bm, cv2.MORPH_OPEN, kernel)
-            inv = cv2.morphologyEx(inv, cv2.MORPH_OPEN, kernel)
-        
-        maps.append(bm)
-        inv_maps.append(inv)
-
-    return maps + inv_maps
-
-def compute_boolean_maps(img, threshold_step, opening_kernel_size):
-    (img_h, img_w, img_c) = img.shape[:3]
-    (l, a, b) = cv2.split(img)
-    bool_maps = []
-    for channel in [l, a, b]:
-        bool_maps += compute_channel_boolean_maps(channel, threshold_step, opening_kernel_size)
-    return bool_maps
 
 
 def main():
@@ -71,7 +38,15 @@ def main():
             cv2.imwrite(str(path), bool_map_img)
             
     
-    # TODO further processing
+    # Calculate attention map
+    attention_map = calculate_attention_map(bool_maps)
+    cv2.imshow("Attention Map", attention_map)
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(15,15))
+    attention_map = cv2.morphologyEx(attention_map, cv2.MORPH_OPEN, kernel)
+    cv2.imshow("Opening Map", attention_map)
+    attention_map = cv2.morphologyEx(attention_map, cv2.MORPH_CLOSE,kernel)
+    cv2.imshow("Close Map", attention_map)
+
     result_img = cv2.cvtColor(img_lab, cv2.COLOR_LAB2BGR)
     
     if args.output_path is None:
