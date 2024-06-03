@@ -18,6 +18,7 @@ def activate_map(boolean_map):
                 cv2.floodFill(activation, ffill_mask, (j, i), 0)
     return activation
 
+
 def calculate_saliency_map(boolean_maps):
     attention_map = np.zeros(boolean_maps[0].shape, dtype=np.float64)
     i = 0

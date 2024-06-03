@@ -1,8 +1,10 @@
 import cv2
 import sys
 
+
 def eprint(*args, **kwargs):
     print(*args, file = sys.stderr, **kwargs)
+
 
 def load_image(path):
     img = cv2.imread(str(path))

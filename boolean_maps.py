@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+
 def compute_channel_boolean_maps(img, threshold_step, opening_kernel_size):
     # We treat them separately so that appear more sorted
     maps = []
@@ -19,6 +20,7 @@ def compute_channel_boolean_maps(img, threshold_step, opening_kernel_size):
         inv_maps.append(inv)
 
     return maps + inv_maps
+
 
 def compute_boolean_maps(img, threshold_step, opening_kernel_size):
     (img_h, img_w, img_c) = img.shape[:3]
