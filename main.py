@@ -3,9 +3,7 @@ import cv2
 import argparse
 from pathlib import Path
 from utils import eprint, load_image
-from boolean_maps import compute_boolean_maps
-from attention_maps import calculate_saliency_map
-
+from saliency import calculate_saliency_map
 
 
 def main():
@@ -29,24 +27,7 @@ def main():
     
     img_lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
     
-    # Compute (and optionally write) boolean maps
-    bool_maps = compute_boolean_maps(img_lab, args.threshold_step, args.opening_kernel)
-    if args.debug_dir:
-        for (i, bool_map_img) in enumerate(bool_maps):
-            path = args.debug_dir / f"bool_{i}.png"
-            eprint(f"Saving boolean map to {path}")
-            cv2.imwrite(str(path), bool_map_img)
-            
-    
-    # Calculate attention map
-    attention_map = calculate_saliency_map(bool_maps, args.debug_dir)
-    
-    # Post-process attention map
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(15,15))
-    attention_map = cv2.morphologyEx(attention_map, cv2.MORPH_OPEN, kernel)
-    attention_map = cv2.morphologyEx(attention_map, cv2.MORPH_CLOSE,kernel)
-    
-    result_img = attention_map
+    result_img = calculate_saliency_map(img_lab, args.threshold_step, args.opening_kernel, args.debug_dir)
 
     if args.output_path is None:
         cv2.imshow("Result", result_img)
