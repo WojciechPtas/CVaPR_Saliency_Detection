@@ -43,8 +43,8 @@ def calculate_attention_map(boolean_maps, debug_dir=None):
 
 def post_proces_attention_map(attention_map):
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(15,15))
-    attention_map = cv2.morphologyEx(attention_map, cv2.MORPH_OPEN, kernel)
-    attention_map = cv2.morphologyEx(attention_map, cv2.MORPH_CLOSE,kernel)
+    attention_map = cv2.dilate(attention_map, kernel, 1)    
+    attention_map = cv2.normalize(attention_map, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
     return attention_map
 
 
