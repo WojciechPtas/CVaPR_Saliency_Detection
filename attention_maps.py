@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-
+from utils import eprint
 
 def activate_map(boolean_map):
     activation = np.array(boolean_map, dtype=np.uint8)
@@ -19,14 +19,14 @@ def activate_map(boolean_map):
     return activation
 
 
-def calculate_saliency_map(boolean_maps):
+def calculate_saliency_map(boolean_maps, debug_dir=None):
     attention_map = np.zeros(boolean_maps[0].shape, dtype=np.float64)
-    i = 0
-    for boolean_map in boolean_maps:
+    for i, boolean_map in enumerate(boolean_maps):
         activation = activate_map(boolean_map)
-        path = f"results/attn_{i}.png"
-        cv2.imwrite(str(path), activation)
-        i += 1
+        if debug_dir:
+            path = debug_dir / f"attn_{i}.png"
+            eprint(f"Saving boolean map to {path}")
+            cv2.imwrite(str(path), activation)
         attention_map += activation
     attention_map = attention_map / len(boolean_maps)
     return cv2.convertScaleAbs(attention_map)

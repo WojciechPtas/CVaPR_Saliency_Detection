@@ -39,16 +39,15 @@ def main():
             
     
     # Calculate attention map
-    attention_map = calculate_saliency_map(bool_maps)
-    cv2.imshow("Attention Map", attention_map)
+    attention_map = calculate_saliency_map(bool_maps, args.debug_dir)
+    
+    # Post-process attention map
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(15,15))
     attention_map = cv2.morphologyEx(attention_map, cv2.MORPH_OPEN, kernel)
-    cv2.imshow("Opening Map", attention_map)
     attention_map = cv2.morphologyEx(attention_map, cv2.MORPH_CLOSE,kernel)
-    cv2.imshow("Close Map", attention_map)
-
-    result_img = cv2.cvtColor(img_lab, cv2.COLOR_LAB2BGR)
     
+    result_img = attention_map
+
     if args.output_path is None:
         cv2.imshow("Result", result_img)
         cv2.waitKey(0)
