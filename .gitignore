@@ -167,3 +167,6 @@ results
 /.idea/modules.xml
 /.idea/.gitignore
 /.idea/git_toolbox_prj.xml
+/.vscode/
+/img/
+*.png
