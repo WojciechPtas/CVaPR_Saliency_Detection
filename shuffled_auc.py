@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+from matplotlib.image import imread
 
 def discretize_map(gt: np.ndarray) -> np.ndarray:
     return (gt > 0).astype(int)
@@ -45,7 +45,7 @@ def auc_shuffled(saliency_map: np.ndarray, gt: np.ndarray, other_map: np.ndarray
     all_fp = []
 
     for i in random_numbers:
-        r_sal_map = [saliency_map[k % saliency_map.shape[0] - 1, k / saliency_map.shape[0]] for k in i]
+        r_sal_map = [saliency_map[k % saliency_map.shape[0] - 1, k // saliency_map.shape[0]] for k in i]
         r_sal_map = np.array(r_sal_map)
         thresholds = generate_thresholds(step_size)
 
@@ -83,9 +83,9 @@ def auc_shuffled(saliency_map: np.ndarray, gt: np.ndarray, other_map: np.ndarray
     return np.mean(aucs)
 
 # Example usage
-saliencyMap = np.random.rand(100, 100)
-fixationMap = np.random.randint(0, 2, (100, 100))
-otherMap = np.random.randint(0, 2, (100, 100))
+# saliencyMap = imread(r"img/MIT_test_set/Test/Output/i2087721279_fixMap.jpg")
+# fixationMap = imread(r"img/MIT_test_set/Test/Output/i2087721279_fixMap.jpg")
+# otherMap = imread(r"img/MIT_test_set/Test/Output/i2125418545_fixMap.jpg")
 
-average_auc = auc_shuffled(saliencyMap, fixationMap, otherMap, n_splits=100, step_size=0.1, to_plot=True)
+# average_auc = auc_shuffled(saliencyMap, fixationMap, otherMap, n_splits=100, step_size=0.1, to_plot=True)
 # print("Average AUC after shuffling:", average_auc)
