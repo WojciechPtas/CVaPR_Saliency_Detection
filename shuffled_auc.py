@@ -32,14 +32,20 @@ def auc_shuffled(saliency_map: np.ndarray, gt: np.ndarray, other_map: np.ndarray
     ind = len(other_map_fixations)
     assert ind == np.sum(other_map), 'Incorrect data provided'
 
-    random_numbers = [np.random.permutation(ind) for _ in range(n_splits)]
+    num_pixels = gt.shape[0] * gt.shape[1]
+    random_numbers = []
+    for i in range(n_splits):
+        temp = []
+        for k in range(num_fixations):
+            temp.append(np.random.randint(num_pixels))
+        random_numbers.append(temp)
 
     aucs = []
     all_tp = []
     all_fp = []
 
     for i in random_numbers:
-        r_sal_map = [saliency_map[k // saliency_map.shape[1], k % saliency_map.shape[1]] for k in i]
+        r_sal_map = [saliency_map[k % saliency_map.shape[0] - 1, k / saliency_map.shape[0]] for k in i]
         r_sal_map = np.array(r_sal_map)
         thresholds = generate_thresholds(step_size)
 
@@ -48,7 +54,7 @@ def auc_shuffled(saliency_map: np.ndarray, gt: np.ndarray, other_map: np.ndarray
             temp = np.zeros(saliency_map.shape)
             temp[saliency_map >= thresh] = 1.0
             num_overlap = np.where(np.add(temp, gt) == 2)[0].shape[0]
-            tp = num_overlap / num_fixations
+            tp = num_overlap / (num_fixations * 1.0)
             fp = len(np.where(r_sal_map > thresh)[0]) / num_fixations
             area.append((round(tp, 4), round(fp, 4)))
 
@@ -77,9 +83,9 @@ def auc_shuffled(saliency_map: np.ndarray, gt: np.ndarray, other_map: np.ndarray
     return np.mean(aucs)
 
 # Example usage
-# saliencyMap = np.random.rand(100, 100)
-# fixationMap = np.random.randint(0, 2, (100, 100))
-# otherMap = np.random.randint(0, 2, (100, 100))
-#
-# average_auc = auc_shuffled(saliencyMap, fixationMap, otherMap, n_splits=100, step_size=0.1, to_plot=True)
+saliencyMap = np.random.rand(100, 100)
+fixationMap = np.random.randint(0, 2, (100, 100))
+otherMap = np.random.randint(0, 2, (100, 100))
+
+average_auc = auc_shuffled(saliencyMap, fixationMap, otherMap, n_splits=100, step_size=0.1, to_plot=True)
 # print("Average AUC after shuffling:", average_auc)
