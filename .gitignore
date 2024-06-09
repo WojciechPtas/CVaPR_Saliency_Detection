@@ -170,3 +170,4 @@ results
 /.vscode/
 /img/
 *.png
+/test.py
