@@ -5,7 +5,6 @@ from pathlib import Path
 from utils import eprint, load_image
 from saliency import calculate_saliency_map
 
-
 def main():
     parser = argparse.ArgumentParser(
         prog = "saliency",
@@ -13,6 +12,7 @@ def main():
     )
     
     parser.add_argument('input_path', type = Path)
+    parser.add_argument('-m', '--input_mask', type=Path)
     parser.add_argument('-o', '--output_path', type = Path)
     parser.add_argument('-d', '--debug_dir', type = Path)
     parser.add_argument('--opening_kernel', type = int, default = 13)
@@ -28,6 +28,7 @@ def main():
     img_lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
     
     result_img = calculate_saliency_map(img_lab, args.threshold_step, args.opening_kernel, args.debug_dir)
+
 
     if args.output_path is None:
         cv2.imshow("Result", result_img)
