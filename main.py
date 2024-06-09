@@ -11,6 +11,10 @@ from utils import eprint, load_image, load_binary_image_and_resize, choose_rando
     save_result_to_excel, show_image
 from saliency import calculate_saliency_map
 
+# Example use
+# python main.py .\img\1.jpg -m .\img\Test4\1_result.png --random_images_dir .\img\Test4\ -o .\img\archive\
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog = "saliency",
