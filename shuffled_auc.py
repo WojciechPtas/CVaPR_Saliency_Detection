@@ -1,6 +1,9 @@
+from threading import Thread
+
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.image import imread
+
 
 def discretize_map(gt: np.ndarray) -> np.ndarray:
     return (gt > 0).astype(int)
@@ -71,21 +74,27 @@ def auc_shuffled(saliency_map: np.ndarray, gt: np.ndarray, other_map: np.ndarray
         plt.figure()
         for tp_list, fp_list in zip(all_tp, all_fp):
             plt.plot(fp_list, tp_list, color='grey', alpha=0.2)
-        mean_fp = np.mean(all_fp, axis=0)
-        mean_tp = np.mean(all_tp, axis=0)
-        plt.plot(mean_fp, mean_tp, color='blue', lw=2, label='Mean ROC curve')
+        # mean_fp = np.mean(all_fp, axis=0)
+        # mean_tp = np.mean(all_tp, axis=0)
+        # plt.plot(mean_fp, mean_tp, color='blue', lw=2, label='Mean ROC curve')
+
         plt.xlabel('FP Rate')
         plt.ylabel('TP Rate')
         plt.title('ROC Curve')
-        plt.legend(loc="lower right")
+        # plt.legend("lower right")
         plt.show()
+
 
     return np.mean(aucs)
 
-# Example usage
+
+
+
 # saliencyMap = imread(r"img/MIT_test_set/Test/Output/i2087721279_fixMap.jpg")
 # fixationMap = imread(r"img/MIT_test_set/Test/Output/i2087721279_fixMap.jpg")
 # otherMap = imread(r"img/MIT_test_set/Test/Output/i2125418545_fixMap.jpg")
 
 # average_auc = auc_shuffled(saliencyMap, fixationMap, otherMap, n_splits=100, step_size=0.1, to_plot=True)
-# print("Average AUC after shuffling:", average_auc)
+# saliencyMap = np.random.rand(100, 100)
+# fixationMap = np.random.randint(0, 2, (100, 100))
+# otherMap = np.random.randint(0, 2, (100, 100))
