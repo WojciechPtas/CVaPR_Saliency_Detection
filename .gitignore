@@ -159,7 +159,6 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-results
 /.idea/inspectionProfiles/profiles_settings.xml
 /.idea/vcs.xml
 /.idea/CVaPR_Saliency_Detection.iml
@@ -170,3 +169,5 @@ results
 /.vscode/
 /img/
 *.png
+/test.py
+/result.xlsx

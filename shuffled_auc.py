@@ -1,5 +1,8 @@
+from threading import Thread
+
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.image import imread
 
 
 def discretize_map(gt: np.ndarray) -> np.ndarray:
@@ -32,14 +35,20 @@ def auc_shuffled(saliency_map: np.ndarray, gt: np.ndarray, other_map: np.ndarray
     ind = len(other_map_fixations)
     assert ind == np.sum(other_map), 'Incorrect data provided'
 
-    random_numbers = [np.random.permutation(ind) for _ in range(n_splits)]
+    num_pixels = gt.shape[0] * gt.shape[1]
+    random_numbers = []
+    for i in range(n_splits):
+        temp = []
+        for k in range(num_fixations):
+            temp.append(np.random.randint(num_pixels))
+        random_numbers.append(temp)
 
     aucs = []
     all_tp = []
     all_fp = []
 
     for i in random_numbers:
-        r_sal_map = [saliency_map[k // saliency_map.shape[1], k % saliency_map.shape[1]] for k in i]
+        r_sal_map = [saliency_map[k % saliency_map.shape[0] - 1, k // saliency_map.shape[0]] for k in i]
         r_sal_map = np.array(r_sal_map)
         thresholds = generate_thresholds(step_size)
 
@@ -48,7 +57,7 @@ def auc_shuffled(saliency_map: np.ndarray, gt: np.ndarray, other_map: np.ndarray
             temp = np.zeros(saliency_map.shape)
             temp[saliency_map >= thresh] = 1.0
             num_overlap = np.where(np.add(temp, gt) == 2)[0].shape[0]
-            tp = num_overlap / num_fixations
+            tp = num_overlap / (num_fixations * 1.0)
             fp = len(np.where(r_sal_map > thresh)[0]) / num_fixations
             area.append((round(tp, 4), round(fp, 4)))
 
@@ -65,21 +74,27 @@ def auc_shuffled(saliency_map: np.ndarray, gt: np.ndarray, other_map: np.ndarray
         plt.figure()
         for tp_list, fp_list in zip(all_tp, all_fp):
             plt.plot(fp_list, tp_list, color='grey', alpha=0.2)
-        mean_fp = np.mean(all_fp, axis=0)
-        mean_tp = np.mean(all_tp, axis=0)
-        plt.plot(mean_fp, mean_tp, color='blue', lw=2, label='Mean ROC curve')
+        # mean_fp = np.mean(all_fp, axis=0)
+        # mean_tp = np.mean(all_tp, axis=0)
+        # plt.plot(mean_fp, mean_tp, color='blue', lw=2, label='Mean ROC curve')
+
         plt.xlabel('FP Rate')
         plt.ylabel('TP Rate')
         plt.title('ROC Curve')
-        plt.legend(loc="lower right")
+        # plt.legend("lower right")
         plt.show()
+
 
     return np.mean(aucs)
 
-# Example usage
+
+
+
+# saliencyMap = imread(r"img/MIT_test_set/Test/Output/i2087721279_fixMap.jpg")
+# fixationMap = imread(r"img/MIT_test_set/Test/Output/i2087721279_fixMap.jpg")
+# otherMap = imread(r"img/MIT_test_set/Test/Output/i2125418545_fixMap.jpg")
+
+# average_auc = auc_shuffled(saliencyMap, fixationMap, otherMap, n_splits=100, step_size=0.1, to_plot=True)
 # saliencyMap = np.random.rand(100, 100)
 # fixationMap = np.random.randint(0, 2, (100, 100))
 # otherMap = np.random.randint(0, 2, (100, 100))
-#
-# average_auc = auc_shuffled(saliencyMap, fixationMap, otherMap, n_splits=100, step_size=0.1, to_plot=True)
-# print("Average AUC after shuffling:", average_auc)
